@@ -1,6 +1,9 @@
 //! The `Client` is used to access all API methods.
 use oauth2;
-use url::Url;
+use hyper;
+use hyper::client::HttpConnector;
+use futures::{Future, Stream};
+use tokio_core::reactor::Core;
 
 /// Base API request string
 const API_BASE: &str = "https://api.pinterest.com/v1/";
@@ -51,10 +54,27 @@ pub struct Config<'a> {
 }
 
 /// Handles API methods
-pub struct Client { }
+pub struct Client { 
+    token: Option<oauth2::Token>,
+    hyper: hyper::Client<HttpConnector>, 
+    core: Core,
+}
+
+impl Default for Client {
+    fn default() -> Self {
+        let mut core = Core::new().unwrap();
+        Client {
+            token: None,
+            hyper: hyper::Client::new(&core.handle()),
+            core: core,
+        }
+    }
+}
 
 impl Client {
-    //pub fn new(client_id: &str, client_secret: &str, )
+    pub fn new(token: oauth2::Token) -> Self {
+        Client { token: Some(token), .. Client::default() }
+    }
 }
 
 /// Handles authentication with OAuth flow

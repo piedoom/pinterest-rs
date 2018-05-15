@@ -4,5 +4,8 @@
 
 extern crate oauth2;
 extern crate url;
+extern crate hyper;
+extern crate futures;
+extern crate tokio_core;
 
 pub mod client;
